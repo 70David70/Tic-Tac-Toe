@@ -43,8 +43,6 @@ let gameboard = (() => {
         playField[row][column] = sign;
         console.log(playField)
 
-        //return true to switch turns with the opponent
-        return true
     }
     
     return({getField, clear, play})
@@ -52,6 +50,30 @@ let gameboard = (() => {
 
 // TODO: add event listener to get which sign the user Chooses
 //       and wither it's a PvP or PvB(player versus bot)
+//once the player clicks START. you use createCOntestant to store players with their sign in an array
 
 //TODO: create a function that execute each time you call play() to respond to the player
 //      only when the chosen mode is PvB
+let gameMaster = (() => {
+    //check if the game is pvp or pvb
+    let gameMode = null //pvp or pvb
+    let setGameMode = (label) => {
+        if (label != "pvp" && label != "pvb") throw new Error("invalid game mode")
+        gameMode = label
+    }
+
+    let players = []
+    let Addplayers = (sign) => {
+        players.push(createContestant(sign))
+    }
+
+    // pick a random player to start the game
+    let currentRound = players[Math.floor(Math.random() * players.length)]
+    //switch turns when play is called
+    let switchRound = () => {
+        if (currentRound == players[0]) currentRound = players[1];
+        else currentRound = players[0];
+    }
+
+    // uses a different function to check for wins, losses, and ties
+})()
