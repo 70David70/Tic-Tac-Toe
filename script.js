@@ -41,6 +41,8 @@ let gameboard = (() => {
         if (playField[row][column] != null) return false;
 
         playField[row][column] = sign;
+        if (gameMaster.checkWins(sign, [row, column])) console.log(`${sign} wins`);
+        
         console.log(playField)
 
     }
@@ -76,4 +78,69 @@ let gameMaster = (() => {
     }
 
     // uses a different function to check for wins, losses, and ties
+    let checkWins = (sign, startingIndex, board) => {
+    
+    
+        //     //row
+        let mover = startingIndex;
+
+        if (startingIndex[0] % 2 == 0) {
+            if (startingIndex[0] + 1 > 2) {
+                if (board[mover[0] - 1][mover[1]] == sign && board[mover[0] - 2][mover[1]] == sign) {
+                    return true;
+                }
+            }
+            else if (startingIndex[0] + 1 == 1){
+                if (board[mover[0] + 1][mover[1]] == sign && board[mover[0 + 2]][mover[1]] == sign) {
+                    return true;
+                }
+            }
+            else {
+                if (board[mover[0] + 1][mover[1]] == sign && board[mover[0 - 1]][mover[1]] == sign) {
+                    return true;
+                }
+            }
+        }
+       //column check
+       else if (startingIndex[1] % 2 == 0) {
+            if (startingIndex[1] + 1 > 2) {
+                if (board[mover[0]][mover[1] - 1] == sign && board[mover[0]][mover[1] - 2] == sign) {
+                    return true;
+                }
+            }
+            else if (startingIndex[1] + 1 == 1){
+                if (board[mover[0]][mover[1] + 1] == sign && board[mover[0]][mover[1] + 2] == sign) {
+                    return true;
+                }
+            }
+            else {
+                if (board[mover[0]][mover[1] + 1] == sign && board[mover[0]][mover[1] - 1] == sign) {
+                    return true;
+                }
+            }
+        }
+       //diagonal check
+       else if (startingIndex[0] % 2 == 0 && startingIndex[1] % 2 == 0) {
+            if (startingIndex[0] + 1 > 2 && startingIndex[1] + 1 > 2) {
+                if (board[mover[0] - 1][mover[1] - 1] == sign && board[mover[0] - 2][mover[1] - 2] == sign) {
+                    return true;
+                }
+            }
+            else if (startingIndex[0] + 1 == 1 && startingIndex[1] + 1 == 1){
+                if (board[mover[0] + 1][mover[1] + 1] == sign && board[mover[0] + 2][mover[1] + 2] == sign) {
+                    return true;
+                }
+            }
+            else {
+                if (board[mover[0] + 1][mover[1] + 1] == sign && board[mover[0 - 1]][mover[1] - 1] == sign) {
+                    return true;
+                }
+            }
+        }
+        return false;
+        //last thing we did was creating checkWins
+        // it check ros then columns then diagonals. first it looks if we're on the edges, check for wins. then check wins for the middle
+
+    }
+    return {setGameMode, Addplayers, switchRound, checkWins}
 })()
