@@ -144,3 +144,36 @@ let gameMaster = (() => {
     }
     return {setGameMode, Addplayers, switchRound, checkWins}
 })()
+
+let cpu = ((p2) => {
+    let availableSlots = [];
+    function countAvailable() {
+        let board = gameboard.getField();
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board[i].length; j++) {
+                if (board[i][j] == null) {
+                    //TODO add the available space to the array so that the cpu can randomly pick one to do a play
+                    
+                }
+            }
+        }
+    } countAvailable()
+
+
+    let sign = 'X'; //p2.getSign  (put that in place of 'X')
+    let pickAPlay = availableSlots[Math.floor(Math.random() * availableSlots.length)]
+    
+    
+    console.log(`availableSlots are ${availableSlots}`);
+    console.log(`pickAPlay are ${pickAPlay}`);    
+    console.log(availableSlots[0], availableSlots[0][2])
+
+
+    function play() {
+        gameboard.play(pickAPlay[0], pickAPlay[1], sign)
+    }
+
+    return {countAvailable, play};
+})()
+cpu.play()
+
