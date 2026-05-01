@@ -33,6 +33,8 @@ let gameboard = (() => {
         }
     }
     function play(row, column, sign) {
+        if (!sign) {throw new Error("no sign provided to play")}
+
         //check for invalid input
         if (row < 0 || row >= playField.length || column < 0 || 
             column >= playField[0].length || sign != 'X' && sign != 'O') throw new Error("invalid play")
@@ -41,7 +43,7 @@ let gameboard = (() => {
         if (playField[row][column] != null) return false;
 
         playField[row][column] = sign;
-        if (gameMaster.checkWins(sign, [row, column])) console.log(`${sign} wins`);
+        if (gameMaster.checkWins(sign) == "win") console.log(`${sign} wins`);
         
         console.log(playField)
 
@@ -54,7 +56,7 @@ let gameboard = (() => {
 //       and wither it's a PvP or PvB(player versus bot)
 //once the player clicks START. you use createCOntestant to store players with their sign in an array
 
-//TODO: create a function that execute each time you call play() to respond to the player
+//TODO: call cpu each time a player calls play() to respond to them
 //      only when the chosen mode is PvB
 let gameMaster = (() => {
     //check if the game is pvp or pvb
@@ -67,113 +69,100 @@ let gameMaster = (() => {
     let players = []
     let Addplayers = (sign) => {
         players.push(createContestant(sign))
+        return sign;
     }
 
     // pick a random player to start the game
-    let currentRound = players[Math.floor(Math.random() * players.length)]
+    let currentRound;
+    function randomRound() {
+        currentRound = players[Math.floor(Math.random() * players.length)]
+        return currentRound;
+    }
     //switch turns when play is called
     let switchRound = () => {
         if (currentRound == players[0]) currentRound = players[1];
         else currentRound = players[0];
     }
 
-    // uses a different function to check for wins, losses, and ties
-    let checkWins = (sign, startingIndex, board) => {
+    let checkWins = (sign) => {
+        let board = gameboard.getField()
     
-    
-        //     //row
-        let mover = startingIndex;
+        const WIN_COMBINATIONS = [
+        [[0,0], [0,1], [0, 2]], //row 1
+        [[1,0],[1,1],[1,2]], //row 2 
+        [[2,0],[2,1],[2,2]], //row 3
+        [[0,0],[1,0],[2,0]], //col 1
+        [[0,1],[1,1],[2,1]], //col 2
+        [[0,2],[1,2],[2,2]], //col 3
+        [[0,0],[1,1],[2,2]], //diagonal \
+        [[0,2],[1,1],[2,0]]  //diagonal /
+    ]
 
-        if (startingIndex[0] % 2 == 0) {
-            if (startingIndex[0] + 1 > 2) {
-                if (board[mover[0] - 1][mover[1]] == sign && board[mover[0] - 2][mover[1]] == sign) {
-                    return true;
-                }
-            }
-            else if (startingIndex[0] + 1 == 1){
-                if (board[mover[0] + 1][mover[1]] == sign && board[mover[0 + 2]][mover[1]] == sign) {
-                    return true;
-                }
-            }
-            else {
-                if (board[mover[0] + 1][mover[1]] == sign && board[mover[0 - 1]][mover[1]] == sign) {
-                    return true;
-                }
-            }
-        }
-       //column check
-       else if (startingIndex[1] % 2 == 0) {
-            if (startingIndex[1] + 1 > 2) {
-                if (board[mover[0]][mover[1] - 1] == sign && board[mover[0]][mover[1] - 2] == sign) {
-                    return true;
-                }
-            }
-            else if (startingIndex[1] + 1 == 1){
-                if (board[mover[0]][mover[1] + 1] == sign && board[mover[0]][mover[1] + 2] == sign) {
-                    return true;
-                }
+
+    for (let i = 0; i < WIN_COMBINATIONS.length; i++) {
+        let record = 0
+        for (let j = 0; j < WIN_COMBINATIONS[0].length; j++) {
+
+            let index_i = WIN_COMBINATIONS[i][j][0]
+            let index_j = WIN_COMBINATIONS[i][j][1]
+            if (board[index_i][index_j] == sign) {
+                record++
             }
             else {
-                if (board[mover[0]][mover[1] + 1] == sign && board[mover[0]][mover[1] - 1] == sign) {
-                    return true;
-                }
+                break;
             }
+
+            if (record == 3) return "win"
         }
-       //diagonal check
-       else if (startingIndex[0] % 2 == 0 && startingIndex[1] % 2 == 0) {
-            if (startingIndex[0] + 1 > 2 && startingIndex[1] + 1 > 2) {
-                if (board[mover[0] - 1][mover[1] - 1] == sign && board[mover[0] - 2][mover[1] - 2] == sign) {
-                    return true;
-                }
-            }
-            else if (startingIndex[0] + 1 == 1 && startingIndex[1] + 1 == 1){
-                if (board[mover[0] + 1][mover[1] + 1] == sign && board[mover[0] + 2][mover[1] + 2] == sign) {
-                    return true;
-                }
-            }
-            else {
-                if (board[mover[0] + 1][mover[1] + 1] == sign && board[mover[0 - 1]][mover[1] - 1] == sign) {
-                    return true;
-                }
-            }
-        }
+    }
+
+    if (cpu.countAvailable() == 0) return "tie"
+
         return false;
-        //last thing we did was creating checkWins
-        // it check ros then columns then diagonals. first it looks if we're on the edges, check for wins. then check wins for the middle
 
     }
-    return {setGameMode, Addplayers, switchRound, checkWins}
+    return {setGameMode, Addplayers, randomRound, switchRound, checkWins}
 })()
 
-let cpu = ((p2) => {
+let cpu = (() => {
+    
+    //store the available indexes in array.
     let availableSlots = [];
     function countAvailable() {
+        availableSlots = []
         let board = gameboard.getField();
         for (let i = 0; i < board.length; i++) {
             for (let j = 0; j < board[i].length; j++) {
                 if (board[i][j] == null) {
-                    //TODO add the available space to the array so that the cpu can randomly pick one to do a play
-                    
+                    availableSlots.push([i, j])
                 }
             }
         }
+        return availableSlots.length
     } countAvailable()
 
+    let sign; //X or O
+    function giveSign(newSign) {
+        sign = newSign;
+    }
 
-    let sign = 'X'; //p2.getSign  (put that in place of 'X')
-    let pickAPlay = availableSlots[Math.floor(Math.random() * availableSlots.length)]
-    
-    
-    console.log(`availableSlots are ${availableSlots}`);
-    console.log(`pickAPlay are ${pickAPlay}`);    
-    console.log(availableSlots[0], availableSlots[0][2])
+    let pickAPlay;
+    function decideMove(params) {
+        countAvailable()
+        if (availableSlots.length > 0) {
+            pickAPlay = availableSlots[Math.floor(Math.random() * availableSlots.length)];
+            return pickAPlay; 
+        }
+        else console.log("No empty slots to continue playing")
+    }
 
 
+    //play function that takes an index. plays it then deletes it from the available slots
     function play() {
+        decideMove()
         gameboard.play(pickAPlay[0], pickAPlay[1], sign)
     }
 
-    return {countAvailable, play};
+    return {giveSign, decideMove , play, countAvailable};
 })()
-cpu.play()
 
