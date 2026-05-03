@@ -1,0 +1,62 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+body {
+    background-color: #a7c4c2;
+}
+
+
+/* Mode selection screen */
+#mode-selection-screen {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#start-header {
+    font-size: 1rem;
+    color: #2e0219;
+    font-weight: bold;
+}
+
+
+#mode-buttons {
+    animation: modeButton 1s ease forwards;
+    display: flex;
+    justify-content: center;
+    gap: 100%;
+}
+#mode-buttons button {
+    background-color: #4a001f;
+    border: 2px solid black;
+    color: #97efe9;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 1px;
+    opacity: 0;
+    animation: gameModeButtons 1.5s ease 0.5s forwards;
+}
+#mode-buttons button:hover {
+    color: rgb(255, 6, 6);
+}
+
+#mode-selection-screen.visible #start-header {
+    animation: growThenRise 1.5s ease forwards;
+}
+@keyframes growThenRise {
+    0% {transform: scale(0.1); opacity: 0;}
+    40% {transform: scale(10); opacity: 1; }
+    100% {transform: scale(10) translateY(-2vh) ;}
+}
+
+@keyframes gameModeButtons {
+    0% {transform: scale(0); opacity: 0;}
+    100% {transform: scale(1); opacity: 1;}
+}
