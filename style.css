@@ -67,3 +67,18 @@ body {
     0% {transform: scale(0); opacity: 0;}
     100% {transform: scale(1); opacity: 1;}
 }
+
+/* TODO: gameboard */
+#game-field {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-board {
+    display: grid;
+    grid-template: 1fr 1fr 1fr /1fr 1fr 1fr;
+}
+#game-board.box {
+    border: 1px solid black;
+}
