@@ -166,3 +166,32 @@ let cpu = (() => {
     return {giveSign, decideMove , play, countAvailable};
 })()
 
+
+
+
+
+
+//event listeners
+
+let player1;
+let player2;
+//choose mode page
+let chooseModePage = document.querySelector("#mode-selection-screen")
+chooseModePage.addEventListener("click", (e) => {
+    if (e.target.id == "pvc-mode-btn") {
+        //create 1 player
+        player1 = createContestant("X");
+
+        chooseModePage.classList.toggle("visible");
+    }
+    else if (e.target.id == "pvp-mode-btn") {
+        //create 2 players
+        player1 = createContestant("X");
+        player2 = createContestant("O");
+
+        chooseModePage.classList.toggle("visible");
+    }
+    
+})
+
+
