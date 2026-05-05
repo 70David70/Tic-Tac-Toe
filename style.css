@@ -1,6 +1,7 @@
 * {
     margin: 0;
     padding: 0;
+    transition: 0.5s;
 }
 body {
     background-color: #a7c4c2;
@@ -16,6 +17,12 @@ body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+}
+#mode-selection-screen.visible {
+    opacity: 1;
+    pointer-events: all;
 }
 
 #start-header {
