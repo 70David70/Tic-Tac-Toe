@@ -12,6 +12,7 @@ body {
 #mode-selection-screen {
     width: 100vw;
     height: 100vh;
+    position: absolute;
 
     display: flex;
     justify-content: center;
@@ -70,6 +71,7 @@ body {
 
 /* TODO: gameboard */
 #game-field {
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -77,8 +79,39 @@ body {
 
 #game-board {
     display: grid;
+    height: 50vw;
+    width: 50vw;
     grid-template: 1fr 1fr 1fr /1fr 1fr 1fr;
+    background-color: #2e0219;
+    gap: 5px;
+    box-shadow: 10px 10px rgb(15, 12, 15);
 }
-#game-board.box {
+#game-board .box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: 1px solid black;
+    background-color: white;
+    font-size: 500%;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+#game-board .box:hover {
+    background-color: #4a001f;
+    color: white;
+    font-size: 700%;
+}
+#score-hud {
+    width: 100vw;
+    z-index: 2;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 70%;
+}
+#score-hud .score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: larger;
 }
