@@ -32,12 +32,29 @@ let gameboard = (() => {
             }
         }
     }
+
+    function updateGameBoard() {
+        let gameboardDom = document.getElementById("game-board")
+        let tempGameboard = gameboard.getField()
+        let temp = 0
+        
+        for (let i = 0; i < tempGameboard.length; i++) {
+            for (let j = 0; j < tempGameboard[0].length; j++) {
+                if (tempGameboard[i][j] != null) {
+                    gameboardDom.children[temp].textContent = `${tempGameboard[i][j]}`
+                }
+                temp++;
+            }
+        }
+    
+    }
+
     function play(row, column, sign) {
         if (!sign) {throw new Error("no sign provided to play")}
 
         //check for invalid input
         if (row < 0 || row >= playField.length || column < 0 || 
-            column >= playField[0].length || sign != 'X' && sign != 'O') throw new Error("invalid play")
+            column >= playField[0].length || sign != 'X' && sign != 'O') throw new Error(`invalid play, got${row, column, sign}`)
         
         //if not null then there's already a sign in that index. return false to make another play
         if (playField[row][column] != null) return false;
@@ -46,18 +63,15 @@ let gameboard = (() => {
         if (gameMaster.checkWins(sign) == "win") console.log(`${sign} wins`);
         
         console.log(playField)
+        gameMaster.switchRound()
+        updateGameBoard()
 
     }
     
     return({getField, clear, play})
 })()
 
-// TODO: add event listener to get which sign the user Chooses
-//       and wither it's a PvP or PvB(player versus bot)
-//once the player clicks START. you use createCOntestant to store players with their sign in an array
 
-//TODO: call cpu each time a player calls play() to respond to them
-//      only when the chosen mode is PvB
 let gameMaster = (() => {
     //check if the game is pvp or pvb
     let gameMode = null //pvp or pvb
@@ -65,12 +79,16 @@ let gameMaster = (() => {
         if (label != "pvp" && label != "pvb") throw new Error("invalid game mode")
         gameMode = label
     }
+    function getGameMode() {
+        return gameMode;
+    }
 
     let players = []
     let Addplayers = (sign) => {
         players.push(createContestant(sign))
         return sign;
     }
+    function playersList() {return players;}
 
     // pick a random player to start the game
     let currentRound;
@@ -83,6 +101,7 @@ let gameMaster = (() => {
         if (currentRound == players[0]) currentRound = players[1];
         else currentRound = players[0];
     }
+    let getRound = () => { return currentRound;}
 
     let checkWins = (sign) => {
         let board = gameboard.getField()
@@ -121,7 +140,7 @@ let gameMaster = (() => {
         return false;
 
     }
-    return {setGameMode, Addplayers, randomRound, switchRound, checkWins}
+    return {setGameMode, getGameMode, Addplayers, playersList, randomRound, switchRound, getRound, checkWins}
 })()
 
 let cpu = (() => {
@@ -145,6 +164,7 @@ let cpu = (() => {
     function giveSign(newSign) {
         sign = newSign;
     }
+    function getSign() { return sign}
 
     let pickAPlay;
     function decideMove(params) {
@@ -163,7 +183,7 @@ let cpu = (() => {
         gameboard.play(pickAPlay[0], pickAPlay[1], sign)
     }
 
-    return {giveSign, decideMove , play, countAvailable};
+    return {giveSign, play, countAvailable, getSign};
 })()
 
 
@@ -173,25 +193,58 @@ let cpu = (() => {
 
 //event listeners
 
-let player1;
-let player2;
-//choose mode page
+//load main divs
 let chooseModePage = document.querySelector("#mode-selection-screen")
+let mainScreen = document.querySelector("#game-field")
+
+//mode selection screen
 chooseModePage.addEventListener("click", (e) => {
     if (e.target.id == "pvc-mode-btn") {
-        //create 1 player
-        player1 = createContestant("X");
+        //create 1 player and cpu
+        gameMaster.Addplayers("X");
+        gameMaster.Addplayers("O")
+        cpu.giveSign("O")
+        gameMaster.setGameMode("pvb")
 
-        chooseModePage.classList.toggle("visible");
+        chooseModePage.classList.toggle("invisible");
+        mainScreen.classList.toggle("invisible")
+        gameStarts()
     }
     else if (e.target.id == "pvp-mode-btn") {
         //create 2 players
-        player1 = createContestant("X");
-        player2 = createContestant("O");
+        gameMaster.Addplayers("X");
+        gameMaster.Addplayers("O")
+        gameMaster.setGameMode("pvp")
 
-        chooseModePage.classList.toggle("visible");
+        chooseModePage.classList.toggle("invisible");
+        mainScreen.classList.toggle("invisible")
+        gameStarts()
     }
     
 })
+
+//game starts
+function gameStarts() {
+    gameMaster.randomRound() //a player with 
+    
+    //cpu plays if it's first
+    function cpuTurn() {
+        if (gameMaster.getGameMode() == "pvb") {
+            if (gameMaster.getRound().getSign() == cpu.getSign()) {
+                cpu.play()
+                gameMaster.checkWins(gameMaster.getRound().getSign())
+            }
+        }
+    }
+    cpuTurn()
+    
+    mainScreen.addEventListener("click", (e) => {
+        let chosenPlay = e.target.id;
+        gameboard.play(chosenPlay[0], chosenPlay[2], gameMaster.getRound().getSign())
+        gameMaster.checkWins(gameMaster.getRound().getSign())
+        cpuTurn()
+    })
+}
+
 
 

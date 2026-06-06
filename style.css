@@ -18,14 +18,13 @@ body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    
+}
+
+.invisible {
     opacity: 0;
     pointer-events: none;
 }
-#mode-selection-screen.visible {
-    opacity: 1;
-    pointer-events: all;
-}
-
 #start-header {
     font-size: 1rem;
     color: #2e0219;
@@ -55,7 +54,7 @@ body {
     color: rgb(255, 6, 6);
 }
 
-#mode-selection-screen.visible #start-header {
+#mode-selection-screen #start-header {
     animation: growThenRise 1.5s ease forwards;
 }
 @keyframes growThenRise {
@@ -85,6 +84,7 @@ body {
     background-color: #2e0219;
     gap: 5px;
     box-shadow: 10px 10px rgb(15, 12, 15);
+    z-index: 10;
 }
 #game-board .box {
     display: flex;
