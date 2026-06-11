@@ -43,6 +43,9 @@ let gameboard = (() => {
                 if (tempGameboard[i][j] != null) {
                     gameboardDom.children[temp].textContent = `${tempGameboard[i][j]}`
                 }
+                else {
+                    gameboardDom.children[temp].textContent = "";
+                }
                 temp++;
             }
         }
@@ -68,7 +71,7 @@ let gameboard = (() => {
 
     }
     
-    return({getField, clear, play})
+    return({getField, clear, play, updateGameBoard})
 })()
 
 
@@ -88,6 +91,7 @@ let gameMaster = (() => {
         players.push(createContestant(sign))
         return sign;
     }
+    function clearPlayers() {players = []}
     function playersList() {return players;}
 
     // pick a random player to start the game
@@ -131,16 +135,23 @@ let gameMaster = (() => {
                 break;
             }
 
-            if (record == 3) return "win"
+            if (record == 3) {
+                updateResultsScreen(sign)
+                return "win"
+
+            }
         }
     }
-
-    if (cpu.countAvailable() == 0) return "tie"
+    
+    if (cpu.countAvailable() == 0) {
+        updateResultsScreen("tie")
+        return "tie"
+    }
 
         return false;
 
     }
-    return {setGameMode, getGameMode, Addplayers, playersList, randomRound, switchRound, getRound, checkWins}
+    return {setGameMode, getGameMode, Addplayers, playersList, clearPlayers, randomRound, switchRound, getRound, checkWins}
 })()
 
 let cpu = (() => {
@@ -232,7 +243,6 @@ function gameStarts() {
         if (gameMaster.getGameMode() == "pvb") {
             if (gameMaster.getRound().getSign() == cpu.getSign()) {
                 cpu.play()
-                gameMaster.checkWins(gameMaster.getRound().getSign())
             }
         }
     }
@@ -241,10 +251,39 @@ function gameStarts() {
     mainScreen.addEventListener("click", (e) => {
         let chosenPlay = e.target.id;
         gameboard.play(chosenPlay[0], chosenPlay[2], gameMaster.getRound().getSign())
-        gameMaster.checkWins(gameMaster.getRound().getSign())
         cpuTurn()
     })
 }
 
 
 
+//update results screen
+let resultsScreen = document.querySelector("#results-screen")
+let winnerNamePlace = document.querySelector("#winner-name");
+let resultsMessage = document.querySelector("#win-message")
+function updateResultsScreen(winner) {
+
+    resultsScreen.classList.toggle("invisible")
+
+    if (winner == "tie") {
+        winnerNamePlace.textContent = ""
+        resultsMessage.textContent = "That's a tie!"
+    }
+    else if (winner == "X") {
+        winnerNamePlace.textContent = "X.."
+        resultsMessage.textContent = " has won"
+    }
+    else {
+        winnerNamePlace.textContent = "O.."
+        resultsMessage.textContent = " has won"
+    }
+}
+let playAgainBtn = document.querySelector("#play-again-btn")
+playAgainBtn.addEventListener("click", (e) => {
+    gameboard.clear()
+    gameMaster.clearPlayers()
+    gameboard.updateGameBoard()
+    chooseModePage.classList.toggle("invisible")
+    mainScreen.classList.toggle("invisible")
+    resultsScreen.classList.toggle("invisible")
+})

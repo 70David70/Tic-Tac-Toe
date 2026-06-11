@@ -24,16 +24,6 @@
 
 
         <div id="game-field" class="invisible">
-            <div id="score-hud">
-                <div id="player1-score" class="score">
-                    <h1>player</h1>
-                    <h3>0</h3>
-                </div>
-                <div id="player2-score" class="score">
-                    <h1>player</h1>
-                    <h3>0</h3>
-                </div>
-            </div>
             <div id="game-board">
                 <div class="box" id="0,0"></div>
                 <div class="box" id="0,1"></div>
@@ -44,6 +34,17 @@
                 <div class="box" id="2,0"></div>
                 <div class="box" id="2,1"></div>
                 <div class="box" id="2,2"></div>
+            </div>
+        </div>
+
+        <div id="results-screen" class="invisible">
+            <div>
+                <div id="results-paragraph">
+                    <h1 id="winner-name">X</h1>
+                    <p id="win-message">has won!</p>
+                </div>
+                
+                <button id="play-again-btn">PLAY AGAIN</button>
             </div>
         </div>
 

@@ -84,7 +84,7 @@ body {
     background-color: #2e0219;
     gap: 5px;
     box-shadow: 10px 10px rgb(15, 12, 15);
-    z-index: 10;
+    z-index: 3;
 }
 #game-board .box {
     display: flex;
@@ -100,18 +100,43 @@ body {
     color: white;
     font-size: 700%;
 }
-#score-hud {
-    width: 100vw;
-    z-index: 2;
+
+#results-screen {
+    z-index: 4;
     position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: #9cb2d4;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 70%;
 }
-#score-hud .score {
+#results-screen div {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    font-size: larger;
+}
+#results-screen #results-paragraph {
+    display: flex;
+    flex-direction: row;
+    font-weight: bolder;
+    font-size: 10rem;
+}
+#results-paragraph h1 {
+    color: yellow;
+    font-size: 10rem;
+}
+
+#results-screen button{
+    padding: 6px;
+    font-weight: bold;
+    width: 20%;
+}
+
+#results-screen button:hover {
+    background-color: yellow;
+    box-shadow: 10px 0 black;
 }
